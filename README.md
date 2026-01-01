@@ -1,93 +1,176 @@
-# Smart Energy Consumption Analysis — House 1 (REFIT Dataset)
+Nice timing 👍 — yes, this **README must be updated now**, since you’ve completed **Modules 1–4**.
+Below is a **clean, updated README** that reflects **everything you’ve done so far**, without overclaiming future work.
 
-This project performs **device-level energy consumption analysis** using the REFIT Smart Home Dataset.  
-The work includes:
+👉 **You can directly copy–paste this and replace your current README.md**.
 
-- Data cleaning  
-- Handling nulls and duplicates  
-- Outlier detection  
-- Summary statistics  
-- Distribution plots  
-- Correlation heatmap  
-- Filtering rows based on appliance activity  
-- Preparing cleaned dataset for ML tasks  
+---
 
-This repository will later include:
-- Feature engineering  
-- Linear Regression baseline model  
-- LSTM forecasting model  
-- Flask-based dashboard  
+# 🔌 Smart Energy Consumption Analysis — House 1 (REFIT Dataset)
+
+This project focuses on **device-level energy consumption analysis and forecasting** using the **REFIT Smart Home Dataset (House 1)**.
+The work covers the **complete pipeline from raw data to baseline machine learning model**.
+
+---
+
+## 📌 Project Objectives
+
+* Analyze household energy consumption at appliance level
+* Clean and preprocess large-scale time-series data
+* Engineer meaningful features for forecasting
+* Build and evaluate a **baseline Linear Regression model**
+* Prepare the project for advanced time-series models (LSTM)
 
 ---
 
 ## 📁 Project Structure
 
+```
 SmartEnergyProject/
 │
 ├── data/
-│ ├── House_1_cleaned_sampled.csv # cleaned & sampled dataset for analysis
-│ └── README.md # dataset description
+│   ├── House_1_cleaned_sampled.csv   # cleaned & sampled dataset (EDA reference)
+│   └── README.md                     # dataset notes
 │
 ├── notebooks/
-│ └── Data_Analysis_House1.ipynb # Jupyter notebook for EDA
+│   ├── 01_Data_Analysis.ipynb        # Module 1 & 2: EDA + Preprocessing
+│   ├── 02_Feature_Engineering.ipynb  # Module 3: Feature Engineering
+│   └── 03_Baseline_Model.ipynb       # Module 4: Linear Regression baseline
 │
-├── README.md # project documentation
-└── .gitignore # ignore venv and cache files
-
-
----
-
-## 🧹 Data Cleaning
-
-Performed:
-- Removed rows with **active_count < 3**
-- Calculated active appliances per timestamp
-- Converted Time column to datetime
-- Set Time as index
-- Filtered high-activity periods for better analysis
+├── README.md                         # project documentation
+└── .gitignore                        # ignore venv, cache files
+```
 
 ---
 
-## 📊 Exploratory Data Analysis (EDA)
+## 🧹 Module 1 & 2: Data Cleaning and Preprocessing
 
-Included:
-- Null value check
-- Duplicate check
-- Data type analysis
-- Outlier inspection (boxplots)
-- Distribution plots for:
-  - Aggregate load
-  - Appliance1–Appliance9
-- Correlation heatmap:
-  Shows relationships between appliances and total aggregate power.
+### Performed Tasks
+
+* Loaded REFIT House 1 dataset (~6.9M rows)
+* Checked and confirmed:
+
+  * No missing values
+  * No duplicate records
+* Renamed appliance columns to real appliance names
+* Identified outliers (retained as valid high-energy events)
+* Converted timestamps to `datetime`
+* Set time as index
+* Created `active_count` feature
+* Filtered rows with **active_count ≥ 3**
+* Resampled data:
+
+  * Hourly
+  * Daily
+* Normalized features using **Min-Max Scaling**
+* Split dataset into:
+
+  * Training (70%)
+  * Validation (15%)
+  * Testing (15%)
 
 ---
 
-## 🗂 Dataset
+## 📊 Module 1: Exploratory Data Analysis (EDA)
 
-REFIT Smart Home Energy Dataset — House 1  
-Sampling: **1 row per 10** for GitHub upload.
+### Analysis Included
 
-**Original dataset has over 6.9M rows**  
-**Cleaned (active_count ≥ 3) has ~2.7M rows**  
-**Uploaded sampled dataset has reduced size for GitHub**
+* Summary statistics
+* Distribution plots of:
+
+  * Aggregate load
+  * Individual appliances
+* Boxplots for outlier inspection
+* Correlation heatmap:
+
+  * Relationship between appliances and aggregate consumption
+
+All tables and visualizations are included directly inside the notebook.
 
 ---
 
-## 🚀 Next Steps (Week by Week)
+## 🧠 Module 3: Feature Engineering
 
-- Feature Engineering (lag features, rolling averages)
-- Baseline Linear Regression model
-- LSTM time-series forecasting
-- Model comparison
-- Smart suggestions engine
-- Flask dashboard integration
+### Features Created
+
+* **Time-based features**
+
+  * Hour
+  * Day
+  * Weekday
+  * Month
+* **Device-level aggregation**
+
+  * Total appliance load
+  * Mean appliance load
+  * Maximum appliance load
+* **Lag features**
+
+  * Previous hour (`lag1`)
+  * Previous day (`lag24`)
+* **Rolling statistics**
+
+  * 3-hour rolling mean
+  * 24-hour rolling mean
+* Handled NaN values generated by lag/rolling operations
+* Prepared final ML-ready feature matrix
+
+Final dataset:
+
+* **3702 samples**
+* **21 engineered features**
+* **1 target variable (Aggregate energy)**
+
+---
+
+## 📈 Module 4: Baseline Model Development
+
+### Model Implemented
+
+* **Linear Regression** as baseline forecasting model
+
+### Evaluation Metrics
+
+* Mean Absolute Error (MAE)
+* Root Mean Squared Error (RMSE)
+* Metrics computed for:
+
+  * Training set
+  * Validation set
+  * Test set
+
+### Visualizations
+
+* Actual vs Predicted energy usage (line plot)
+* Scatter plot of actual vs predicted values
+
+The baseline model serves as a **reference point for comparison with advanced models**.
+
+---
+
+## 🗂 Dataset Information
+
+* **Dataset:** REFIT Smart Home Energy Dataset — House 1
+* **Original size:** ~6.9 million rows
+* **After filtering (active_count ≥ 3):** ~2.7 million rows
+* **Uploaded version:** Sampled dataset (GitHub-friendly size)
+
+---
+
+## 🚀 Future Work
+
+* LSTM-based time-series forecasting
+* Model performance comparison
+* Hyperparameter tuning
+* Flask-based dashboard for visualization
+* Smart energy usage recommendations
 
 ---
 
 ## 👤 Author
 
-Keerthi (Keerthana-Uppanda)  
-BTech — Computer Science Engineering  
+**Uppanda Keerthana**
+B.Tech — Computer Science Engineering
 Smart Energy Consumption Project
+
+---
 
