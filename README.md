@@ -1,10 +1,3 @@
-Nice timing 👍 — yes, this **README must be updated now**, since you’ve completed **Modules 1–4**.
-Below is a **clean, updated README** that reflects **everything you’ve done so far**, without overclaiming future work.
-
-👉 **You can directly copy–paste this and replace your current README.md**.
-
----
-
 # 🔌 Smart Energy Consumption Analysis — House 1 (REFIT Dataset)
 
 This project focuses on **device-level energy consumption analysis and forecasting** using the **REFIT Smart Home Dataset (House 1)**.
