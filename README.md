@@ -3,7 +3,7 @@
 # 🔌 Smart Energy Consumption Analysis — House 1 (REFIT Dataset)
 
 This project presents an end-to-end **energy consumption analysis and forecasting system** using the **REFIT Smart Home Dataset (House 1)**.
-The work spans from **raw data preprocessing** to **deep learning–based time-series forecasting** and **deployment-ready model integration**.
+The work spans from **raw data preprocessing** to **deep learning–based time-series forecasting** and **deployment-ready model integration using Flask**.
 
 ---
 
@@ -15,7 +15,7 @@ The work spans from **raw data preprocessing** to **deep learning–based time-s
 * Build and evaluate a **baseline Linear Regression model**
 * Develop an **LSTM-based deep learning model**
 * Evaluate models using standard metrics and detect overfitting
-* Prepare the final model for Flask-based integration
+* Deploy the trained model using a **Flask-based web application**
 
 ---
 
@@ -32,7 +32,14 @@ SmartEnergyProject/
 │   ├── 01_Data_Analysis.ipynb        # Module 1 & 2: EDA + Preprocessing
 │   ├── 02_Feature_Engineering.ipynb  # Module 3: Feature Engineering
 │   ├── 03_Baseline_Model.ipynb       # Module 4: Linear Regression + CV
-│   └── 04_LSTM_Model.ipynb           # Module 5 & 6: LSTM, evaluation, integration
+│   ├── 04_LSTM_Model.ipynb           # Module 5 & 6: LSTM, evaluation, integration
+│   └── 05_Dashboard_Visualization.ipynb # Module 7: Dashboard & Visualization
+│
+├── app.py                            # Flask API for model inference
+├── templates/
+│   └── index.html                    # Dashboard UI
+├── static/
+│   └── style.css                     # Dashboard styling
 │
 ├── README.md                         # project documentation
 └── .gitignore                        # ignore venv, cache, model files
@@ -129,24 +136,13 @@ Final dataset characteristics:
 * Mean Absolute Error (MAE)
 * Root Mean Squared Error (RMSE)
 
-Metrics were calculated for:
-
-* Training set
-* Validation set
-* Test set
+Metrics were calculated for training, validation, and test sets.
 
 ### Time-Series Cross-Validation (Overfitting Check)
 
-* Performed **TimeSeriesSplit cross-validation** to respect temporal ordering
+* Applied **TimeSeriesSplit cross-validation** to preserve temporal ordering
 * Observed consistent MAE values across folds with low variance
 * Results indicate that the baseline model **does not suffer from overfitting**
-
-### Visualizations
-
-* Actual vs Predicted energy consumption (line plot)
-* Scatter plot of actual vs predicted values
-
-The baseline model provides a reference for evaluating advanced models.
 
 ---
 
@@ -156,46 +152,17 @@ The baseline model provides a reference for evaluating advanced models.
 
 * Implemented an **LSTM (Long Short-Term Memory)** network using TensorFlow/Keras
 * Used sequential input with a **24-hour lookback window**
-* Model architecture:
+* Architecture:
 
   * LSTM layer with 64 units
   * Dropout layer for regularization
   * Dense output layer for regression
 
----
-
-### Training and Hyperparameter Tuning
+### Training and Evaluation
 
 * Trained using Adam optimizer and Mean Squared Error loss
-* Experimented with:
-
-  * Epoch values
-  * Batch sizes
-* Selected configuration based on validation loss convergence
-
----
-
-### Evaluation and Comparison
-
-* Evaluated the LSTM model using:
-
-  * Mean Absolute Error (MAE)
-  * Root Mean Squared Error (RMSE)
-* Retrained Linear Regression on the same train-test split for fair comparison
-* LSTM achieved lower error values than the baseline model, demonstrating its ability to capture temporal dependencies
-
----
-
-### Visualizations
-
-* Actual vs Predicted energy usage for the LSTM model
-* Comparative visualization of:
-
-  * Linear Regression predictions
-  * LSTM predictions
-  * Actual energy consumption
-
-These plots highlight the improved forecasting capability of the LSTM model.
+* Evaluated using MAE, RMSE, and R² score
+* Compared LSTM with Linear Regression on identical test data
 
 ---
 
@@ -208,19 +175,34 @@ These plots highlight the improved forecasting capability of the LSTM model.
   * MAE
   * RMSE
   * R² score
-* LSTM selected as the **best-performing model** based on all metrics
+* Selected the best-performing model based on evaluation results
 
-### Model Saving
+### Model Saving & Integration
 
-* Final LSTM model saved locally in **native `.keras` format**
-* Model file excluded from GitHub to follow best practices for binary artifacts
-
-### Integration Preparation
-
-* Loaded the saved LSTM model using Keras
+* Saved the final LSTM model in **native `.keras` format**
 * Implemented a **Flask-compatible prediction function**
-* Function accepts a 24-hour input sequence and returns predicted energy value
-* Tested predictions using sample inputs to verify integration readiness
+* Verified model predictions using sample inputs before deployment
+
+---
+
+## 🖥️ Module 7: Dashboard and Visualization (Flask API)
+
+### Dashboard Features
+
+* Built a **Flask-based web application** (`app.py`) for model inference
+* Implemented REST API endpoint (`/predict`) for energy forecasting
+* Integrated trained LSTM model into Flask backend
+* Designed a clean and responsive UI using **HTML and CSS**
+* Implemented **multi-step forecasting** (predicting multiple future time steps)
+* Displayed prediction results dynamically on the dashboard
+
+### Purpose
+
+This module enables:
+
+* Real-time model interaction
+* Demonstration-ready deployment
+* Clear visualization of future energy consumption trends
 
 ---
 
@@ -237,8 +219,8 @@ These plots highlight the improved forecasting capability of the LSTM model.
 
 * Advanced LSTM architectures (stacked / bidirectional)
 * Hyperparameter optimization using grid or random search
-* Flask-based REST API for real-time predictions
-* Interactive dashboard for energy visualization
+* Deployment on cloud platforms
+* Interactive charts within the dashboard
 * Smart energy usage recommendation system
 
 ---
@@ -250,3 +232,4 @@ B.Tech — Computer Science Engineering
 Smart Energy Consumption Project
 
 ---
+
