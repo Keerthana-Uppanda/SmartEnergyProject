@@ -1,3 +1,51 @@
+```markdown
+# 🔌 Smart Energy Consumption Analysis — House 1 (REFIT Dataset)
+
+This project presents an end-to-end **energy consumption analysis and forecasting system** using the **REFIT Smart Home Dataset (House 1)**.
+The work spans from **raw data preprocessing** to **deep learning–based time-series forecasting** and **deployment-ready model integration using Flask**.
+
+---
+
+## 📌 Project Objectives
+
+- Analyze household energy consumption at appliance level
+- Clean and preprocess large-scale time-series energy data
+- Engineer meaningful features for forecasting
+- Build and evaluate a **baseline Linear Regression model**
+- Develop an **LSTM-based deep learning model**
+- Evaluate models using standard metrics and detect overfitting
+- Deploy the trained model using a **Flask-based web dashboard**
+
+---
+
+## 📁 Project Structure
+
+```
+
+SmartEnergyProject/
+│
+├── data/
+│   ├── House_1_cleaned_named.csv     # cleaned dataset with real appliance names
+│   └── README.md                     # dataset notes
+│
+├── notebooks/
+│   ├── 01_Data_Analysis.ipynb        # Module 1 & 2: EDA + Preprocessing
+│   ├── 02_Feature_Engineering.ipynb  # Module 3: Feature Engineering
+│   ├── 03_Baseline_Model.ipynb       # Module 4: Linear Regression + CV
+│   ├── 04_LSTM_Model.ipynb           # Module 5 & 6: LSTM, evaluation, integration
+│   └── 05_Dashboard_Visualization.ipynb # Module 7: Dashboard explanation
+│
+├── app.py                            # Flask backend for model inference
+├── templates/
+│   ├── index.html                    # Application landing page
+│   └── dashboard.html                # Prediction dashboard UI
+├── static/
+│   └── style.css                     # Dashboard styling
+│
+├── README.md                         # project documentation
+└── .gitignore                        # ignore venv, cache, model files
+
+```
 
 ---
 
@@ -172,3 +220,5 @@ This module enables:
 **Uppanda Keerthana**  
 B.Tech — Computer Science Engineering  
 Smart Energy Consumption Project
+```
+
