@@ -20,32 +20,28 @@ The work spans from **raw data preprocessing** to **deep learning–based time-s
 
 ## 📁 Project Structure
 
-```
-
 SmartEnergyProject/
 │
 ├── data/
-│   ├── House_1_cleaned_named.csv     # cleaned dataset with real appliance names
-│   └── README.md                     # dataset notes
+│   ├── House_1_cleaned_named.csv
+│   └── README.md
 │
 ├── notebooks/
-│   ├── 01_Data_Analysis.ipynb        # Module 1 & 2: EDA + Preprocessing
-│   ├── 02_Feature_Engineering.ipynb  # Module 3: Feature Engineering
-│   ├── 03_Baseline_Model.ipynb       # Module 4: Linear Regression + CV
-│   ├── 04_LSTM_Model.ipynb           # Module 5 & 6: LSTM, evaluation, integration
-│   └── 05_Dashboard_Visualization.ipynb # Module 7: Dashboard explanation
+│   ├── 01_Data_Analysis.ipynb
+│   ├── 02_Feature_Engineering.ipynb
+│   ├── 03_Baseline_Model.ipynb
+│   ├── 04_LSTM_Model.ipynb
+│   └── 05_Dashboard_Visualization.ipynb
 │
-├── app.py                            # Flask backend for model inference
+├── app.py
+│
 ├── templates/
-│   ├── index.html                    # Application landing page
-│   └── dashboard.html                # Prediction dashboard UI
-├── static/
-│   └── style.css                     # Dashboard styling
+│   ├── index.html
+│   └── dashboard.html
 │
-├── README.md                         # project documentation
-└── .gitignore                        # ignore venv, cache, model files
+├── static/
+│   └── style.css
 
-```
 
 ---
 
