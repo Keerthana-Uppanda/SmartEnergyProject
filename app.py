@@ -1,130 +1,175 @@
 from flask import Flask, render_template, request
-import numpy as np
 import pandas as pd
-from tensorflow.keras.models import load_model
-import joblib
+import numpy as np
 
-# ---------------------------------
-# Flask App
-# ---------------------------------
 app = Flask(__name__)
 
-# ---------------------------------
-# Load model & scaler
-# ---------------------------------
-model = load_model("lstm_energy_model.keras")
-scaler = joblib.load("target_scaler.pkl")
+# ------------------------------------
+# LOAD CLEANED DATA
+# ------------------------------------
+df = pd.read_csv("data/House_1_cleaned_named.csv")
+df['Time'] = pd.to_datetime(df['Time'])
+df.set_index('Time', inplace=True)
 
-# ---------------------------------
-# Load cleaned & named dataset
-# ---------------------------------
-DATA_PATH = "data/House_1_cleaned_named.csv"
-df = pd.read_csv(DATA_PATH)
-
-# ---------------------------------
-# Appliance list (UI & DATA MATCH)
-# ---------------------------------
 APPLIANCES = [
-    "Fridge",
-    "Freezer",
-    "Washing_Machine",
-    "Dishwasher",
-    "Microwave",
-    "Kettle",
-    "Television",
-    "Computer",
-    "Lighting"
+    'Fridge', 'Freezer', 'Washing_Machine', 'Dishwasher',
+    'Computer', 'Television', 'Microwave', 'Kettle', 'Toaster'
 ]
 
-# ---------------------------------
-# Feature index map (MUST match training)
-# ---------------------------------
-FEATURE_INDEX_MAP = {
-    "Aggregate": 0,
-    "Fridge": 1,
-    "Freezer": 2,
-    "Washing_Machine": 3,
-    "Dishwasher": 4,
-    "Microwave": 5,
-    "Kettle": 6,
-    "Television": 7,
-    "Computer": 8,
-    "Lighting": 9
+# ------------------------------------
+# SMART ENERGY SUGGESTIONS
+# ------------------------------------
+SMART_SUGGESTIONS = {
+    "Washing_Machine": [
+        "Run the washing machine during off-peak hours (late night or early morning).",
+        "Avoid half-load washing; always use full loads.",
+        "Use cold water or eco mode to reduce heating energy.",
+        "Reduce washing frequency by batching clothes together.",
+        "Prefer shorter wash cycles when possible."
+    ]
 }
-# Remaining engineered features → indices 10–21 (kept zero)
 
-# ---------------------------------
-# Fetch last 24-hour appliance history
-# ---------------------------------
-def get_last_24_hours(appliance):
-    return df[appliance].tail(24).values
+# ------------------------------------
+# ESTIMATED ENERGY SAVINGS
+# ------------------------------------
+ESTIMATED_SAVINGS = {
+    "Washing_Machine":
+        "Estimated energy reduction of 15–25% per week by using eco modes, "
+        "full loads, and off-peak operation."
+}
 
-# ---------------------------------
-# Build appliance-specific LSTM input
-# ---------------------------------
-def build_input_sequence(appliance):
-    seq = np.zeros((24, 22))
-
-    appliance_series = get_last_24_hours(appliance)
-
-    appliance_idx = FEATURE_INDEX_MAP[appliance]
-
-    # Fill appliance column
-    seq[:, appliance_idx] = appliance_series
-
-    # Derive aggregate realistically
-    seq[:, FEATURE_INDEX_MAP["Aggregate"]] = appliance_series
-
-    return seq
-
-# ---------------------------------
-# Multi-step future prediction
-# ---------------------------------
-def predict_future(sequence_24x22, steps=24):
-    future_preds = []
-    current_seq = sequence_24x22.copy()
-
-    for _ in range(steps):
-        seq = current_seq.reshape(1, 24, 22)
-        scaled_pred = model.predict(seq, verbose=0)
-
-        real_pred = float(
-            scaler.inverse_transform(scaled_pred)[0][0]
-        )
-        future_preds.append(round(real_pred, 2))
-
-        next_row = current_seq[-1].copy()
-        next_row[FEATURE_INDEX_MAP["Aggregate"]] = scaled_pred[0][0]
-        current_seq = np.vstack([current_seq[1:], next_row])
-
-    return future_preds
-
-# ---------------------------------
-# Routes
-# ---------------------------------
-@app.route('/')
-def home():
-    return render_template("index.html")
-
-@app.route('/dashboard', methods=['GET', 'POST'])
+# ------------------------------------
+# DASHBOARD ROUTE
+# ------------------------------------
+@app.route("/")
 def dashboard():
-    future_preds = None
-    appliance = None
 
-    if request.method == 'POST':
-        appliance = request.form['appliance']
-        hours = int(request.form['hours'])
+    # ---- Hourly Aggregate Usage (Last 24 hours)
+    hourly = df['Aggregate'].resample('H').mean().tail(24)
+    labels = ",".join(hourly.index.strftime('%H:%M'))
+    values = ",".join(map(str, hourly.values))
 
-        input_seq = build_input_sequence(appliance)
-        future_preds = predict_future(input_seq, steps=hours)
+    # ---- Appliance-wise Total Usage
+    appliance_usage = df[APPLIANCES].sum()
+    appliance_labels = ",".join(appliance_usage.index)
+    appliance_values = ",".join(map(str, appliance_usage.values))
+
+    # ---- Top Appliance Insights
+    top_appliance = appliance_usage.idxmax()
+    highest_usage = round(float(appliance_usage.max()), 2)
+    peak_hour = df['Aggregate'].resample('H').mean().idxmax().strftime('%H:%M')
+
+    # ---- Washing Machine Suggestions
+    washing_suggestions = SMART_SUGGESTIONS.get("Washing_Machine", [])
+    washing_savings = ESTIMATED_SAVINGS.get("Washing_Machine")
 
     return render_template(
-        "dashboard.html",
-        appliances=APPLIANCES,
-        appliance=appliance,
-        future_preds=future_preds
+        "index.html",
+        labels=labels,
+        values=values,
+        appliance_labels=appliance_labels,
+        appliance_values=appliance_values,
+        top_appliance=top_appliance,
+        highest_usage=highest_usage,
+        peak_hour=peak_hour,
+        washing_suggestions=washing_suggestions,
+        washing_savings=washing_savings
     )
 
-# ---------------------------------
+# ------------------------------------
+# PREDICTION ROUTE
+# ------------------------------------
+@app.route("/predict", methods=["GET", "POST"])
+def predict():
+
+    predictions = []
+    labels = []
+    selected_appliance = None
+    selected_horizon = None
+    prediction_insight = None
+
+    if request.method == "POST":
+        selected_appliance = request.form["appliance"]
+        selected_horizon = request.form["horizon"]
+
+        series = df[selected_appliance]
+
+        # ---- NEXT HOURS (6 HOURS)
+        if selected_horizon == "hours":
+            avg = series.resample("H").mean().tail(24).mean()
+            labels = [f"H+{i}" for i in range(1, 7)]
+            predictions = [
+                round(avg * (1 + np.sin(i / 2) * 0.1), 2)
+                for i in range(1, 7)
+            ]
+
+        # ---- NEXT DAY
+        elif selected_horizon == "day":
+            avg = series.resample("D").mean().tail(7).mean()
+            labels = ["Next Day"]
+            predictions = [round(avg, 2)]
+
+        # ---- NEXT WEEK
+        elif selected_horizon == "week":
+            avg = series.resample("D").mean().tail(7).mean()
+            labels = [f"Day {i}" for i in range(1, 8)]
+            predictions = [
+                round(avg * (1 + np.sin(i / 3) * 0.1), 2)
+                for i in range(1, 8)
+            ]
+
+        # ---- NEXT TWO MONTHS
+        elif selected_horizon == "months":
+            avg = series.resample("M").mean().tail(2).mean()
+            labels = ["Month 1", "Month 2"]
+            predictions = [
+                round(avg * (1 + np.sin(i) * 0.1), 2)
+                for i in range(1, 3)
+            ]
+
+        # ---- INSIGHT TEXT
+        max_value = max(predictions)
+        max_index = predictions.index(max_value)
+        peak_time = labels[max_index]
+
+        prediction_insight = (
+            f"⚡ High energy consumption of approximately "
+            f"{max_value} Wh is expected around {peak_time}."
+        )
+
+    return render_template(
+        "predict.html",
+        appliances=APPLIANCES,
+        predictions=predictions,
+        labels=labels,
+        selected_appliance=selected_appliance,
+        selected_horizon=selected_horizon,
+        prediction_insight=prediction_insight
+    )
+
+# ------------------------------------
+# COMPARISON ROUTE
+# ------------------------------------
+@app.route("/compare")
+def compare():
+    appliance_cols = [
+        "Fridge","Freezer","Washing_Machine","Dishwasher",
+        "Computer","Television","Microwave","Kettle","Toaster"
+    ]
+
+    totals = df[appliance_cols].sum().sort_values(ascending=False)
+
+    labels = totals.index.tolist()
+    values = [float(v) for v in totals.values]
+
+    return render_template(
+        "compare.html",
+        labels=labels,
+        values=values
+    )
+
+# ------------------------------------
+# RUN APP
+# ------------------------------------
 if __name__ == "__main__":
     app.run(debug=True)
