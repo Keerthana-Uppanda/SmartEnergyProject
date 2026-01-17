@@ -2,32 +2,33 @@
 
 # 🔌 Smart Energy Consumption Analysis — House 1 (REFIT Dataset)
 
-This project presents a **data-driven smart energy analysis and visualization system** using the
-**REFIT Smart Home Dataset (House 1)**.
-
-The work focuses on **real household energy insights**, combining:
-
-* large-scale time-series data analysis
-* appliance-level consumption breakdown
-* baseline forecasting concepts
-* and a **Flask-based interactive dashboard** for visualization, comparison, and prediction.
+This project presents a **complete data-driven analysis and forecasting system for household energy consumption** using the **REFIT Smart Home Dataset (House 1)**.
+The work covers **data preprocessing, analysis, modeling, and an interactive dashboard built with Flask**.
 
 ---
 
-## 📌 Project Objectives
+## 📌 Project Overview
 
-* Analyze household energy consumption at **appliance level**
+The goal of this project is to:
+
+* Understand **appliance-level energy usage patterns**
+* Identify **high-consuming appliances and peak usage periods**
+* Build **forecasting models** for future energy consumption
+* Present insights through a **clear, interactive dashboard**
+
+This project emphasizes **data understanding and visualization first**, followed by **prediction and insights**, which aligns with real-world analytics workflows.
+
+---
+
+## 🎯 Project Objectives
+
+* Analyze household energy consumption at appliance level
 * Clean and preprocess large-scale time-series energy data
-* Engineer meaningful features from temporal energy patterns
+* Engineer meaningful time-based and statistical features
 * Build and evaluate a **baseline Linear Regression model**
-* Explore deep learning concepts using **LSTM**
-* Detect overfitting using **time-series cross-validation**
-* Develop a **Flask-based dashboard** for:
-
-  * energy insights
-  * appliance comparison
-  * future consumption estimation
-  * energy-saving recommendations
+* Develop an **LSTM-based time-series forecasting model**
+* Evaluate models using MAE, RMSE, and R²
+* Deploy results using a **Flask-based web dashboard**
 
 ---
 
@@ -37,34 +38,35 @@ The work focuses on **real household energy insights**, combining:
 SmartEnergyProject/
 │
 ├── data/
-│   ├── House_1_cleaned_named.csv   # cleaned dataset with real appliance names
-│   └── README.md                   # dataset description
+│   ├── House_1_cleaned_named.csv      # Cleaned dataset with real appliance names
+│   └── README.md                      # Dataset description
 │
 ├── notebooks/
-│   ├── 01_Data_Analysis.ipynb        # EDA + preprocessing
-│   ├── 02_Feature_Engineering.ipynb  # feature extraction
-│   ├── 03_Baseline_Model.ipynb       # linear regression + CV
-│   ├── 04_LSTM_Model.ipynb           # LSTM experimentation
+│   ├── 01_Data_Analysis.ipynb         # EDA and preprocessing
+│   ├── 02_Feature_Engineering.ipynb   # Feature creation
+│   ├── 03_Baseline_Model.ipynb        # Linear Regression + cross-validation
+│   ├── 04_LSTM_Model.ipynb            # LSTM model training & evaluation
 │   └── 05_Dashboard_Visualization.ipynb
 │
-├── app.py                            # Flask backend
+├── app.py                             # Flask application
 │
 ├── templates/
-│   ├── index.html                   # dashboard page
-│   ├── predict.html                 # prediction portal
-│   └── compare.html                 # appliance comparison
+│   ├── index.html                     # Dashboard UI
+│   ├── predict.html                   # Prediction page
+│   └── compare.html                   # Appliance comparison page
 │
 ├── static/
-│   └── style.css                    # UI styling
+│   └── style.css                      # Dashboard styling
 │
-└── README.md
+├── README.md                          # Project documentation
+└── .gitignore                         # Ignore venv, cache, model files
 ```
 
 ---
 
 ## 🧹 Module 1 & 2: Data Cleaning and Preprocessing
 
-### Performed Tasks
+### Steps Performed
 
 * Loaded REFIT House 1 dataset (~6.9 million rows)
 * Verified data quality:
@@ -74,17 +76,16 @@ SmartEnergyProject/
 * Renamed appliance columns to **real appliance names**:
 
   * Fridge, Freezer, Washing Machine, Dishwasher, etc.
-* Identified outliers and retained them as valid high-energy events
 * Converted timestamps to `datetime`
 * Set time column as index for time-series analysis
 * Created `active_count` feature (number of active appliances)
 * Filtered rows with **active_count ≥ 3**
-* Resampled energy usage:
+* Resampled data:
 
   * Hourly
   * Daily
-* Normalized data using **Min-Max Scaling**
-* Split dataset into:
+* Normalized numerical values using **Min-Max Scaling**
+* Split data into:
 
   * Training (70%)
   * Validation (15%)
@@ -94,23 +95,23 @@ SmartEnergyProject/
 
 ## 📊 Module 1: Exploratory Data Analysis (EDA)
 
-### Analysis Included
+### Analysis Includes
 
-* Summary statistics for aggregate and appliance-level consumption
+* Summary statistics
 * Distribution plots for:
 
-  * Aggregate load
+  * Aggregate energy usage
   * Individual appliances
 * Boxplots for outlier inspection
-* Correlation heatmap showing relationship between appliances and total load
+* Correlation heatmap showing relationships between appliances and total energy consumption
 
-All analysis is documented inside the notebook with plots and tables.
+All plots and tables are available inside the notebook.
 
 ---
 
 ## 🧠 Module 3: Feature Engineering
 
-### Features Created
+### Engineered Features
 
 * **Time-based features**
 
@@ -131,13 +132,12 @@ All analysis is documented inside the notebook with plots and tables.
 
   * 3-hour rolling mean
   * 24-hour rolling mean
-* Removed NaN values caused by lag and rolling windows
 
 Final dataset:
 
-* **3702 samples**
-* **21 engineered features**
-* **1 target variable (aggregate energy consumption)**
+* 3702 samples
+* 21 features
+* 1 target variable (aggregate energy consumption)
 
 ---
 
@@ -145,9 +145,9 @@ Final dataset:
 
 ### Model Used
 
-* **Linear Regression** as baseline forecasting model
+* **Linear Regression**
 
-### Evaluation Metrics
+### Evaluation
 
 * Mean Absolute Error (MAE)
 * Root Mean Squared Error (RMSE)
@@ -155,99 +155,86 @@ Final dataset:
 ### Overfitting Check
 
 * Applied **TimeSeriesSplit cross-validation**
-* Maintained temporal ordering of data
-* Observed consistent MAE values across folds
-* Concluded that the baseline model **does not suffer from overfitting**
+* Observed stable MAE across folds
+* Conclusion: **Baseline model does not overfit**
 
 ---
 
-## 🤖 Module 5: LSTM Model (Exploratory)
+## 🤖 Module 5: LSTM Model Development
 
-### Purpose
+### Model Architecture
 
-* To understand deep learning approaches for time-series forecasting
-* To compare classical ML with neural network models
+* LSTM layer (64 units)
+* Dropout for regularization
+* Dense output layer
+* Lookback window: **24 hours**
 
-### Highlights
+### Training & Evaluation
 
-* Implemented LSTM with a 24-hour lookback window
-* Trained using Adam optimizer and MSE loss
-* Evaluated using MAE, RMSE, and R² score
-* Used primarily as a **conceptual extension**, not the core deployment model
+* Optimizer: Adam
+* Loss: Mean Squared Error
+* Evaluated using MAE, RMSE, and R²
+* Compared against Linear Regression using the same test set
 
 ---
 
 ## 🔗 Module 6: Model Evaluation and Integration
 
-* Compared Linear Regression and LSTM models
-* Evaluated both using:
+* Evaluated both models using:
 
   * MAE
   * RMSE
   * R² score
-* Used evaluation results to guide deployment decisions
-* Prepared model logic for integration into Flask backend
+* Saved the trained LSTM model in `.keras` format
+* Built a **Flask-compatible prediction function**
+* Verified predictions using real historical data samples
 
 ---
 
-## 🖥️ Module 7: Dashboard and Visualization (Flask Application)
+## 🖥️ Module 7: Dashboard and Visualization (Flask)
 
-### Dashboard Capabilities
+### Dashboard Features
 
-* Built a **Flask-based web dashboard**
-* Displays **real energy insights from actual data**
+* Flask-based web application
+* Real-time data-driven dashboard
 * Visualizations include:
 
   * Hourly energy consumption (bar chart)
   * Appliance-wise energy distribution (pie chart)
-* Appliance comparison portal for identifying top consumers
-* Prediction portal for:
+  * Appliance comparison
+* Prediction portal:
 
-  * next hours
-  * next day
-  * next week
-  * next two months (trend-based estimation)
+  * Forecasts next hours, days, and weeks
+  * Generates readable insights such as peak usage times
+* Designed with clean, responsive UI using HTML & CSS
 
-### Smart Insights
-
-* Identifies:
-
-  * Top energy-consuming appliance
-  * Peak usage hour
-* Provides **energy-saving recommendations**
-
-  * Especially for **Washing Machine**, including:
-
-    * off-peak usage
-    * full-load operation
-    * eco mode suggestions
-* Displays **estimated energy savings (15–25%)** based on optimized usage patterns
+This module makes the project **demonstration-ready and mentor-friendly**.
 
 ---
 
 ## 🗂 Dataset Information
 
-* **Dataset:** REFIT Smart Home Energy Dataset — House 1
-* **Original size:** ~6.9 million rows
-* **After filtering:** ~2.7 million rows
-* **Final uploaded version:** cleaned and reduced for GitHub compatibility
+* Dataset: REFIT Smart Home Energy Dataset — House 1
+* Original size: ~6.9 million rows
+* After filtering: ~2.7 million rows
+* Uploaded dataset: cleaned and reduced for GitHub compatibility
 
 ---
 
-## 🚀 Future Work
+## 🚀 Future Enhancements
 
-* Appliance-specific prediction models
-* Advanced forecasting techniques
-* Cloud deployment of the dashboard
-* User authentication and personalization
-* Automated energy-saving recommendation engine
+* Appliance-specific forecasting models
+* Advanced LSTM architectures
+* Cloud deployment
+* Smarter rule-based energy-saving recommendations
+* Interactive dashboards with more user controls
 
 ---
 
 ## 👤 Author
 
 **Uppanda Keerthana**
-Smart Energy Consumption Project
+Smart Energy Consumption Analysis Project
 
 ---
 
